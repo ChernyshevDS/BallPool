@@ -21,6 +21,7 @@ public:
 	void setBounds(const QRectF& bound);
 
 private:
+	void collide(Ball& b1, Ball& b2);
 
 	std::vector<Ball> m_balls;
 	QRectF m_bounds;

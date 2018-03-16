@@ -1,24 +1,19 @@
 #include "PoolTableScene.h"
 
-/*namespace
-{
-	// Скорость, пикселей в секунду
-	constexpr float BALL_SPEED_X = 250;
-	constexpr float BALL_SPEED_Y = 360;
-
-	constexpr float BALL_SIZE = 40;
-}*/
-
 PoolTableScene::PoolTableScene(const QRectF &bounds)
 	: m_bounds(bounds)
 {
-	Ball b(20.f, Vector2f(50, 50));
-	b.setSpeed(Vector2f(250, 350));
+	Ball b(20, Vector2f(50, 50));
+	b.setSpeed(Vector2f(300, 0));
 	m_balls.push_back(b);
 
-	Ball b2(30, Vector2f(100, 200), Qt::red);
-	b2.setSpeed(Vector2f(100, 400));
+	Ball b2(20, Vector2f(350, 52), Qt::red);
+	b2.setSpeed(Vector2f(-100, 0));
 	m_balls.push_back(b2);
+
+	Ball b3(20, Vector2f(100, 252), Qt::blue);
+	b3.setSpeed(Vector2f(0, -200));
+	m_balls.push_back(b3);
 }
 
 
@@ -49,6 +44,20 @@ void PoolTableScene::update(float deltaSeconds)
 		}
 	}
 
+	for (size_t fi = 0; fi < m_balls.size(); ++fi)
+	{
+		for (size_t si = fi + 1; si < m_balls.size(); ++si)
+		{
+			Ball& b1 = m_balls[fi];
+			Ball& b2 = m_balls[si];
+			// проверяем столкновение fi, si
+			if (dist(b1.center(), b2.center()) <= b1.radius() + b2.radius())
+			{
+				collide(b1, b2);
+			}
+		}
+	}
+
 }
 
 void PoolTableScene::redraw(QPainter& painter)
@@ -67,4 +76,17 @@ QRectF PoolTableScene::bounds() const
 void PoolTableScene::setBounds(const QRectF & bound)
 {
 	m_bounds = bound;
+}
+
+void PoolTableScene::collide(Ball & b1, Ball & b2)
+{
+	Vector2f dist_vec = b1.center() - b2.center();
+	Vector2f dv = b1.speed() - b2.speed();
+	float dist_squared = std::pow(dist_vec.length(), 2);
+
+	Vector2f w1 = b1.speed() - ((dot(dv, dist_vec) / dist_squared) * dist_vec);
+	Vector2f w2 = b2.speed() - ((dot(dv, dist_vec) / dist_squared) * -dist_vec);
+
+	b1.setSpeed(w1);
+	b2.setSpeed(w2);
 }
