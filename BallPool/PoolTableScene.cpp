@@ -1,4 +1,5 @@
 #include "PoolTableScene.h"
+#include "fuzzy.h"
 
 PoolTableScene::PoolTableScene(const QRectF &bounds)
 	: m_bounds(bounds)
@@ -44,6 +45,9 @@ void PoolTableScene::update(float deltaSeconds)
 			// проверяем столкновение fi, si
 			if (dist(b1.center(), b2.center()) <= b1.radius() + b2.radius())
 			{
+                Vector2f impulse_before = b1.impulse() + b2.impulse();
+                float energy_before = b1.energy() + b2.energy();
+
                 // возвращаем шары на исходную
                 b1.move(-deltaSeconds);
                 b2.move(-deltaSeconds);
@@ -55,6 +59,13 @@ void PoolTableScene::update(float deltaSeconds)
                 // используем остаток времени после столкновения
                 b1.move(deltaSeconds - tc);
                 b2.move(deltaSeconds - tc);
+
+                Vector2f impulse_after = b1.impulse() + b2.impulse();
+                float energy_after = b1.energy() + b2.energy();
+
+                Q_ASSERT(areFuzzyEqual(impulse_before.x, impulse_after.x));
+                Q_ASSERT(areFuzzyEqual(impulse_before.y, impulse_after.y));
+                Q_ASSERT(areFuzzyEqual(energy_before, energy_after));
 			}
 		}
     }
