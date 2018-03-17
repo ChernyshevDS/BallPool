@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <ctime>
+#include <random>
 
 #include <QtGui/QWindow>
 #include <QtGui/QPainter>
@@ -33,10 +35,13 @@ private: // Начало секции полей и методов, доступных только в наследниках этого 
 	void renderLater();
 	void updateScene(); // обновляет состояние сцены
 	void renderScene(); // перерисовывает содержимое сцены
+    void initRandomGenerator();
+    int getRandomValue(int min, int max);
 
 	// Класс QBackingStore предоставляет окну буфер рисования кадра.
 	QBackingStore *m_backingStore = nullptr;
 	std::unique_ptr<PoolTableScene> m_scene; // объект сцены
 	QElapsedTimer m_updateTimer; // таймер обновления сцены
 	bool m_isAnimating = false;
+    std::mt19937 random_engine;
 };

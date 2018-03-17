@@ -4,6 +4,14 @@ namespace
 {
 	constexpr int WIN_WIDTH = 400;
 	constexpr int WIN_HEIGHT = 400;
+
+    constexpr int BALL_MIN_RADIUS = 10;
+    constexpr int BALL_MAX_RADIUS = 50;
+
+    constexpr int BALL_MIN_SPEED = 0;
+    constexpr int BALL_MAX_SPEED = 500;
+
+    constexpr int INIT_BALLS_CNT = 20;
 }
 
 // Конструктор класса: принимает один (опциональный) параметр типа QWindow,
@@ -15,6 +23,25 @@ RasterWindow::RasterWindow(QWindow *parent)
 {
 	setMinimumSize(QSize(WIN_WIDTH, WIN_HEIGHT));
 	m_updateTimer.start();
+
+    initRandomGenerator();
+
+    int n_balls = 0;
+    while(n_balls < INIT_BALLS_CNT){
+        float r = getRandomValue(BALL_MIN_RADIUS, BALL_MAX_RADIUS);
+        float speed_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+        float speed_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+        float pos_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+        float pos_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+        if(m_scene->tryAddBall(Ball(r, Vector2f(pos_x, pos_y), Vector2f(speed_x, speed_y)))){
+            n_balls++;
+        }
+    }
+
+    /*m_scene->tryAddBall(Ball(20, Vector2f(50, 50), Vector2f(300, 0)));
+    m_scene->tryAddBall(Ball(20, Vector2f(350, 52), Vector2f(-100, 0), Qt::red));
+    m_scene->tryAddBall(Ball(20, Vector2f(100, 252), Vector2f(0, -200), Qt::blue));
+    */
 }
 
 // Возвращает состояние анимации - включена или выключена
@@ -99,23 +126,35 @@ void RasterWindow::renderScene()
 	painter.end();
 
 	m_backingStore->endPaint();
-	m_backingStore->flush(rect);
+    m_backingStore->flush(rect);
+}
+
+void RasterWindow::initRandomGenerator()
+{
+    const unsigned seed = unsigned(std::time(nullptr));
+    random_engine.seed(seed);
+}
+
+int RasterWindow::getRandomValue(int min, int max)
+{
+    std::uniform_int_distribution<size_t> distribution(min, max);
+    return (int)distribution(random_engine);
 }
 
 // Метод обновляет кадр анимации и ставит в очередь следующий
 void RasterWindow::renderNow()
-	{
-		if (!isExposed())
-		{
-			return;
-		}
+{
+    if (!isExposed())
+    {
+        return;
+    }
 
-		updateScene();
-		renderScene();
+    updateScene();
+    renderScene();
 
-		if (m_isAnimating)
-		{
-			renderLater();
-		}
-	}
+    if (m_isAnimating)
+    {
+        renderLater();
+    }
+}
 

@@ -4,9 +4,6 @@
 PoolTableScene::PoolTableScene(const QRectF &bounds)
 	: m_bounds(bounds)
 {
-    m_balls.push_back(Ball(20, Vector2f(50, 50), Vector2f(300, 0)));
-    m_balls.push_back(Ball(20, Vector2f(350, 52), Vector2f(-100, 0), Qt::red));
-    m_balls.push_back(Ball(20, Vector2f(100, 252), Vector2f(0, -200), Qt::blue));
 }
 
 void PoolTableScene::update(float deltaSeconds)
@@ -86,7 +83,17 @@ QRectF PoolTableScene::bounds() const
 
 void PoolTableScene::setBounds(const QRectF & bound)
 {
-	m_bounds = bound;
+    m_bounds = bound;
+}
+
+bool PoolTableScene::tryAddBall(const Ball &ball)
+{
+    for(const auto& b: m_balls){
+        if(b.bbox().intersects(ball.bbox()))
+            return false;
+    }
+    m_balls.push_back(ball);
+    return true;
 }
 
 void PoolTableScene::collide(Ball & b1, Ball & b2)

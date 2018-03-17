@@ -20,6 +20,7 @@ public:
 	QRectF bounds() const;
 	void setBounds(const QRectF& bound);
 
+    bool tryAddBall(const Ball& ball);
 private:
     void collide(Ball& b1, Ball& b2);
     float getCollisionTime(const Ball& b1, const Ball& b2);
