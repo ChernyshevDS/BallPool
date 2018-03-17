@@ -3,19 +3,10 @@
 PoolTableScene::PoolTableScene(const QRectF &bounds)
 	: m_bounds(bounds)
 {
-	Ball b(20, Vector2f(50, 50));
-	b.setSpeed(Vector2f(300, 0));
-	m_balls.push_back(b);
-
-	Ball b2(20, Vector2f(350, 52), Qt::red);
-	b2.setSpeed(Vector2f(-100, 0));
-	m_balls.push_back(b2);
-
-	Ball b3(20, Vector2f(100, 252), Qt::blue);
-	b3.setSpeed(Vector2f(0, -200));
-	m_balls.push_back(b3);
+    m_balls.push_back(Ball(20, Vector2f(50, 50), Vector2f(300, 0)));
+    m_balls.push_back(Ball(20, Vector2f(350, 52), Vector2f(-100, 0), Qt::red));
+    m_balls.push_back(Ball(20, Vector2f(100, 252), Vector2f(0, -200), Qt::blue));
 }
-
 
 void PoolTableScene::update(float deltaSeconds)
 {
@@ -53,11 +44,20 @@ void PoolTableScene::update(float deltaSeconds)
 			// проверяем столкновение fi, si
 			if (dist(b1.center(), b2.center()) <= b1.radius() + b2.radius())
 			{
-				collide(b1, b2);
+                // возвращаем шары на исходную
+                b1.move(-deltaSeconds);
+                b2.move(-deltaSeconds);
+                // вычисляем точное время до столкновения
+                float tc = getCollisionTime(b1, b2);
+                b1.move(tc);
+                b2.move(tc);
+                collide(b1, b2);
+                // используем остаток времени после столкновения
+                b1.move(deltaSeconds - tc);
+                b2.move(deltaSeconds - tc);
 			}
 		}
-	}
-
+    }
 }
 
 void PoolTableScene::redraw(QPainter& painter)
@@ -83,10 +83,28 @@ void PoolTableScene::collide(Ball & b1, Ball & b2)
 	Vector2f dist_vec = b1.center() - b2.center();
 	Vector2f dv = b1.speed() - b2.speed();
 	float dist_squared = std::pow(dist_vec.length(), 2);
+    float factor = dot(dv, dist_vec) / dist_squared;
 
-	Vector2f w1 = b1.speed() - ((dot(dv, dist_vec) / dist_squared) * dist_vec);
-	Vector2f w2 = b2.speed() - ((dot(dv, dist_vec) / dist_squared) * -dist_vec);
+    float mass_f1 = 2 * b2.mass() / (b1.mass() + b2.mass());
+    float mass_f2 = 2 * b1.mass() / (b1.mass() + b2.mass());
+
+    Vector2f w1 = b1.speed() - (mass_f1 * factor * dist_vec);
+    Vector2f w2 = b2.speed() - (mass_f2 * factor * -dist_vec);
 
 	b1.setSpeed(w1);
 	b2.setSpeed(w2);
+}
+
+float PoolTableScene::getCollisionTime(const Ball &b1, const Ball &b2)
+{
+    //     v1        v2
+    //  ( )-->    ( )->
+    //   ----------> cc
+    Vector2f cc = b2.center() - b1.center();
+    float v1 = b1.speed().projectOn(cc);
+    float v2 = b2.speed().projectOn(cc);
+    float appr_speed = v1 - v2;
+    float dist_now = cc.length();
+    float ds = dist_now - (b1.radius() + b2.radius());
+    return ds / appr_speed;
 }

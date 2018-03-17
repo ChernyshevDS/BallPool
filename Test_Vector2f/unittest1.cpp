@@ -208,15 +208,15 @@ namespace Test_Vector2f
 			Vector2f v2{ 0, -4 };
 			Vector2f v3{ -2, -2 };
 
-			Vector2f v1n = normed(v1);
+			Vector2f v1n = norm(v1);
 			Assert::AreEqual(v1n.x, 1.f, TOLERANCE);
 			Assert::AreEqual(v1n.y, 0.f, TOLERANCE);
 
-			Vector2f v2n = normed(v2);
+			Vector2f v2n = norm(v2);
 			Assert::AreEqual(v2n.x, 0.f, TOLERANCE);
 			Assert::AreEqual(v2n.y, -1.f, TOLERANCE);
 
-			Vector2f v3n = normed(v3);
+			Vector2f v3n = norm(v3);
 			Assert::AreEqual(v3n.x, -sqrtf(2) / 2.f, TOLERANCE);
 			Assert::AreEqual(v3n.y, -sqrtf(2) / 2.f, TOLERANCE);
 		}
@@ -239,6 +239,22 @@ namespace Test_Vector2f
 			Vector2f v2{ 0, 4 };
 
 			Assert::AreEqual(dist(v1, v2), 5.f, TOLERANCE);
+		}
+
+		TEST_METHOD(Projection_test)
+		{
+			Vector2f v1{ 3, 4 };
+			Vector2f v2{ 2.2f, 0 };
+			Vector2f v3{ 0, -1.5 };
+
+			float v1_2 = v1.projectOn(v2);
+			Assert::AreEqual(v1_2, 3.f, TOLERANCE);
+
+			float v1_3 = v1.projectOn(v3);
+			Assert::AreEqual(v1_3, -4.f, TOLERANCE);
+
+			float v2_3 = v2.projectOn(v3);
+			Assert::AreEqual(v2_3, 0.f, TOLERANCE);
 		}
 	};
 }

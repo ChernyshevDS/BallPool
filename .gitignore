@@ -9,6 +9,10 @@
 *.userosscache
 *.sln.docstates
 
+#Qt creator project files
+*.pro
+*.pri
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

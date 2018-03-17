@@ -1,13 +1,29 @@
 #include "Ball.h"
 
 
-Ball::Ball(float r, Vector2f center, QColor color)
-	: m_radius(r), m_center(center), m_color(color)
+Ball::Ball(float r, Vector2f center, Vector2f speed, QColor color)
+    : m_radius{r}, m_center{center}, m_speed{speed}, m_color{color}
 {
 }
 
 Ball::~Ball()
 {
+}
+
+float Ball::mass() const
+{
+    return radius() * radius();
+}
+
+float Ball::energy() const
+{
+    float speed_abs = speed().length();
+    return mass() * speed_abs * speed_abs / 2;
+}
+
+Vector2f Ball::impulse() const
+{
+    return speed() * mass();
 }
 
 void Ball::move(float dt)

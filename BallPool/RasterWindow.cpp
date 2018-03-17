@@ -81,7 +81,7 @@ void RasterWindow::updateScene()
 	if (elapsedSeconds > 0)
 	{
 		m_updateTimer.restart();
-		m_scene->update(elapsedSeconds);
+        m_scene->update(elapsedSeconds);
 	}
 }
 

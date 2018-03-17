@@ -7,7 +7,7 @@
 class Ball
 {
 public:
-	Ball(float r, Vector2f center, QColor color = QColor(0xFA, 0xFE, 0x78));
+    Ball(float r, Vector2f center, Vector2f speed = Vector2f{}, QColor color = QColor(0xFA, 0xFE, 0x78));
 	virtual ~Ball();
 
 	void setRadius(float r) { m_radius = r; }
@@ -22,14 +22,18 @@ public:
 	void setColor(const QColor& color) { m_color = color; }
 	QColor color() const { return m_color; }
 
+    float mass() const;
+    float energy() const;
+    Vector2f impulse() const;
+
 	void move(float dt);
 	void draw(QPainter& painter);
 
 	QRectF bbox() const;
 
 private:
-	Vector2f m_center;
-	float m_radius;
+    float m_radius;
+    Vector2f m_center;
 	Vector2f m_speed;
 	QColor m_color;
 };

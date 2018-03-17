@@ -2,6 +2,17 @@
 #include <cmath>
 #include <numeric>
 // —труктура, моделирующа€ двумерный вектор
+struct Vector2f;
+
+Vector2f operator*(const Vector2f& v, float scale);
+Vector2f operator*(float scale, const Vector2f& v);
+Vector2f operator/(const Vector2f& v, float scale);
+
+float dot(const Vector2f& a, const Vector2f& b);
+Vector2f norm(const Vector2f& a);
+Vector2f perp(const Vector2f& a);
+float dist(const Vector2f& a, const Vector2f& b);
+
 struct Vector2f
 {
 	float x = 0;
@@ -14,12 +25,12 @@ struct Vector2f
 	{
 	}
 
-	float length() const
+	inline float length() const
 	{
 		return std::hypot(x, y);
 	}
 
-	void normalize()
+	inline void normalize()
 	{
 		float len = length();
 		if (len != 0) 
@@ -29,53 +40,58 @@ struct Vector2f
 		}
 	}
 
-	Vector2f operator+(const Vector2f& other) const
+	inline float projectOn(const Vector2f& other) const
+	{
+		return dot(*this, other) / other.length();
+	}
+
+	inline Vector2f operator+(const Vector2f& other) const
 	{
 		return { x + other.x, y + other.y };
 	}
 
-	Vector2f& operator+=(const Vector2f& other)
+	inline Vector2f& operator+=(const Vector2f& other)
 	{
 		x += other.x;
 		y += other.y;
 		return *this;
 	}
 
-	Vector2f operator-(const Vector2f& other) const
+	inline Vector2f operator-(const Vector2f& other) const
 	{
 		return { x - other.x, y - other.y };
 	}
 
-	Vector2f& operator-=(const Vector2f& other)
+	inline Vector2f& operator-=(const Vector2f& other)
 	{
 		x -= other.x;
 		y -= other.y;
 		return *this;
 	}
 
-	Vector2f operator-() const
+	inline Vector2f operator-() const
 	{
 		return { -x, -y };
 	}
 
-	bool operator==(const Vector2f &a) const
+	inline bool operator==(const Vector2f &a) const
 	{
 		return ((a.x == this->x) && (a.y == this->y));
 	}
 
-	bool operator!=(const Vector2f &a) const
+	inline bool operator!=(const Vector2f &a) const
 	{
 		return !(a == *this);
 	}
 
-	Vector2f& operator*=(float scale)
+	inline Vector2f& operator*=(float scale)
 	{
 		this->x *= scale;
 		this->y *= scale;
 		return *this;
 	}
 
-	Vector2f& operator/=(float scale)
+	inline Vector2f& operator/=(float scale)
 	{
 		this->x /= scale;
 		this->y /= scale;
@@ -103,7 +119,7 @@ inline float dot(const Vector2f& a, const Vector2f& b)
 	return a.x * b.x + a.y * b.y;
 }
 
-inline Vector2f normed(const Vector2f& a)
+inline Vector2f norm(const Vector2f& a)
 {
 	float len = a.length();
 	if (len == 0)
