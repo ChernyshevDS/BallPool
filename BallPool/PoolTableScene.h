@@ -24,6 +24,8 @@ public:
 private:
     void collide(Ball& b1, Ball& b2);
     float getCollisionTime(const Ball& b1, const Ball& b2);
+    void updateRemainingTime(float dt);
+    void removeDeadBalls();
 
 	std::vector<Ball> m_balls;
 	QRectF m_bounds;

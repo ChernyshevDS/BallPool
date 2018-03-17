@@ -2,7 +2,7 @@
 
 
 Ball::Ball(float r, Vector2f center, Vector2f speed, QColor color)
-    : m_radius{r}, m_center{center}, m_speed{speed}, m_color{color}
+    : m_radius{r}, m_center{center}, m_speed{speed}, m_color{color}, m_remainingTime{10.f}
 {
 }
 
@@ -34,11 +34,8 @@ void Ball::move(float dt)
 
 void Ball::draw(QPainter & painter)
 {
-	//painter.setBrush(Qt::black);
-	//painter.drawRect(bbox());
 	painter.setBrush(QBrush(m_color));
-	painter.drawEllipse(QPointF(m_center.x, m_center.y), m_radius, m_radius);
-	
+	painter.drawEllipse(QPointF(m_center.x, m_center.y), m_radius, m_radius);   
 }
 
 QRectF Ball::bbox() const

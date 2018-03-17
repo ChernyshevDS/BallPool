@@ -8,6 +8,9 @@ PoolTableScene::PoolTableScene(const QRectF &bounds)
 
 void PoolTableScene::update(float deltaSeconds)
 {
+    updateRemainingTime(deltaSeconds);
+    removeDeadBalls();
+
     for (auto &ball : m_balls) {
 		ball.move(deltaSeconds);
 		if (ball.bbox().right() > m_bounds.right())
@@ -125,4 +128,18 @@ float PoolTableScene::getCollisionTime(const Ball &b1, const Ball &b2)
     float dist_now = cc.length();
     float ds = dist_now - (b1.radius() + b2.radius());
     return ds / appr_speed;
+}
+
+void PoolTableScene::updateRemainingTime(float dt)
+{
+    for(auto& b: m_balls){
+        b.setRemainingTime(b.remainingTime() - dt);
+    }
+}
+
+void PoolTableScene::removeDeadBalls()
+{
+    auto it = std::remove_if(m_balls.begin(), m_balls.end(),
+                   [&](const Ball& b){ return b.remainingTime() <= 0; });
+    m_balls.erase(it, m_balls.end());
 }

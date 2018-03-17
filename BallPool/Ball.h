@@ -22,6 +22,9 @@ public:
 	void setColor(const QColor& color) { m_color = color; }
 	QColor color() const { return m_color; }
 
+    void setRemainingTime(float sec) { m_remainingTime = sec; }
+    float remainingTime() const { return m_remainingTime; }
+
     float mass() const;
     float energy() const;
     Vector2f impulse() const;
@@ -36,5 +39,6 @@ private:
     Vector2f m_center;
 	Vector2f m_speed;
 	QColor m_color;
+    float m_remainingTime;
 };
 
