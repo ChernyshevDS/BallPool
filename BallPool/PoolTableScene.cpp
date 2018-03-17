@@ -8,7 +8,7 @@ PoolTableScene::PoolTableScene(const QRectF &bounds)
 
 void PoolTableScene::update(float deltaSeconds)
 {
-	for (auto &ball : m_balls) {
+    for (auto &ball : m_balls) {
 		ball.move(deltaSeconds);
 		if (ball.bbox().right() > m_bounds.right())
 		{

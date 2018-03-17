@@ -29,6 +29,7 @@ protected: // Начало секции полей и методов, доступных только в наследниках этог
 	bool event(QEvent *event) override;
 	void exposeEvent(QExposeEvent *event) override;
 	void resizeEvent(QResizeEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 private: // Начало секции полей и методов, доступных только в наследниках этого класса
 	void renderNow();
@@ -37,6 +38,8 @@ private: // Начало секции полей и методов, доступных только в наследниках этого 
 	void renderScene(); // перерисовывает содержимое сцены
     void initRandomGenerator();
     int getRandomValue(int min, int max);
+    QColor getRandomColor();
+    Ball getRandomBall();
 
 	// Класс QBackingStore предоставляет окну буфер рисования кадра.
 	QBackingStore *m_backingStore = nullptr;

@@ -11,7 +11,7 @@ namespace
     constexpr int BALL_MIN_SPEED = 0;
     constexpr int BALL_MAX_SPEED = 500;
 
-    constexpr int INIT_BALLS_CNT = 20;
+    constexpr int INIT_BALLS_CNT = 5;
 }
 
 // Конструктор класса: принимает один (опциональный) параметр типа QWindow,
@@ -28,20 +28,10 @@ RasterWindow::RasterWindow(QWindow *parent)
 
     int n_balls = 0;
     while(n_balls < INIT_BALLS_CNT){
-        float r = getRandomValue(BALL_MIN_RADIUS, BALL_MAX_RADIUS);
-        float speed_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
-        float speed_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
-        float pos_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
-        float pos_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
-        if(m_scene->tryAddBall(Ball(r, Vector2f(pos_x, pos_y), Vector2f(speed_x, speed_y)))){
+        if(m_scene->tryAddBall(getRandomBall())){
             n_balls++;
         }
     }
-
-    /*m_scene->tryAddBall(Ball(20, Vector2f(50, 50), Vector2f(300, 0)));
-    m_scene->tryAddBall(Ball(20, Vector2f(350, 52), Vector2f(-100, 0), Qt::red));
-    m_scene->tryAddBall(Ball(20, Vector2f(100, 252), Vector2f(0, -200), Qt::blue));
-    */
 }
 
 // Возвращает состояние анимации - включена или выключена
@@ -89,7 +79,16 @@ void RasterWindow::resizeEvent(QResizeEvent *resizeEvent)
 	if (isExposed())
 	{
 		renderNow();
-	}
+    }
+}
+
+void RasterWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton){
+        Ball b = getRandomBall();
+        b.setCenter(Vector2f(event->pos().x(), event->pos().y()));
+        m_scene->tryAddBall(b);
+    }
 }
 
 // Метод добавляет в очередь событий Qt событие обновления экрана (UpdateRequest),
@@ -108,7 +107,10 @@ void RasterWindow::updateScene()
 	if (elapsedSeconds > 0)
 	{
 		m_updateTimer.restart();
-        m_scene->update(elapsedSeconds);
+        float dt = elapsedSeconds / 10;
+        for(int i=0; i<10; i++){
+            m_scene->update(dt);
+        }
 	}
 }
 
@@ -139,6 +141,24 @@ int RasterWindow::getRandomValue(int min, int max)
 {
     std::uniform_int_distribution<size_t> distribution(min, max);
     return (int)distribution(random_engine);
+}
+
+QColor RasterWindow::getRandomColor()
+{
+    int r = getRandomValue(0,255);
+    int g = getRandomValue(0,255);
+    int b = getRandomValue(0,255);
+    return QColor::fromRgb(r, g, b);
+}
+
+Ball RasterWindow::getRandomBall()
+{
+    float r = getRandomValue(BALL_MIN_RADIUS, BALL_MAX_RADIUS);
+    float speed_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+    float speed_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+    float pos_x = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+    float pos_y = getRandomValue(BALL_MIN_SPEED, BALL_MAX_SPEED);
+    return Ball(r, Vector2f(pos_x, pos_y), Vector2f(speed_x, speed_y), getRandomColor());
 }
 
 // Метод обновляет кадр анимации и ставит в очередь следующий
